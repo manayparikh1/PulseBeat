@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseBeat</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap">
+    <style>
+        /*=The heartbeat animation lab and no javascript is gonna be added because I am trash at that ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        p,
+        figure {
+            margin: 0
+        }
+
+        /* ---- light pallete this is the ecg animation paper---*/
+        :root {
+            --paper: #FBF1EE;
+            --card: #FFFAF8;
+            --ink: #1F1418;
+            --dim: #6A555D;
+            --line: #E3CDC7;
+            --oxy: #D6304A;
+            --deoxy: #2E6E8E;
+            --good: #2F7A55;
+            --grid: rgba(214, 48, 74, 0.1);
+            --grid2: rgba(214, 48, 74, .2);
+            --beat: .83s;
+            --disp: "Big Shoulders Display", "Arial Narrow", sans-serif;
+            --body: "Newsreader", Georgia, serif;
+            --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+        }
+
+        /*--dark mode pallete*/
+        @media (prefers-color-scheme:dark) {
+            :root:not([data-theme="light"]) {
+                --paper: #0C0A0E;
+                --card: #171220;
+                --ink: #F2E6E9;
+                --dim: #AC9BA4;
+                --line: #2D2431;
+                --oxy: #FF5A6E;
+                --deoxy: #62B6DC;
+                --good: #5FCF9A;
+                --grid: rgba(255, 90, 110, .06);
+                --grid2: rgba(255, 90, 110, .13);
+            }
+        }
+    </style>
+</head>
+
+</html>
