@@ -360,52 +360,9 @@
         body:has(#ra:checked) .i-ra,
         body:has(#rv:checked) .i-rv,
         body:has(#la:checked) .i-la,
-        body:has(#lv:checked) .i-lv,
+        rv,
+        body:has(#la:checked) .i-la,
         body:has(#lu:checked) .i-lu,
-        body:has(#bo:checked) .i-bo,
         body:has(#va:checked) .i-va {
             display: block
         }
-
-        body:has(#ra:checked) [for=ra],
-        body:has(#rv:checked) [for=rv],
-        body:has(#la:checked) [for=la],
-        body:has(#lv:checked) [for=lv],
-        body:has(#lu:checked) [for=lu],
-        body:has(#bo:checked) [for=bo],
-        body:has(#va:checked) [for=va] {
-            background: var(--oxy);
-            border-color: var(--oxy);
-            color: #fff
-        }
-
-        body:has(#ra:checked) .s-ra,
-        body:has(#rv:checked) .s-rv,
-        body:has(#la:checked) .s-la,
-        body:has(#lv:checked) .s-lv,
-        body:has(#lu:checked) .s-lu,
-        body:has(#bo:checked) .s-bo,
-        body:has(#va:checked) .s-va {
-            stroke: var(--ink);
-            stroke-width: 7
-        }
-
-        .diagram text {
-            font-family: var(--disp);
-            font-weight: 700;
-            fill: var(--ink)
-        }
-
-        tube {
-            fill: none;
-            stroke-dasharray: 13 27;
-            animation: flow calc(var(--beat)*2.4) linear infinite
-        }
-
-        @keyframes flow {
-            to {
-                stroke-dashoffset: -40
-            }
-        }
-
-        /*FACTS*/
