@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseBeat</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap">
+    <style>
+        /*=The heartbeat animation lab and no javascript is gonna be added because I am trash at that ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        p,
+        figure {
+            margin: 0
+        }
+
+        /* ---- light pallete this is the ecg animation paper---*/
+        :root {
+            --paper: #FBF1EE;
+            --card: #FFFAF8;
+            --ink: #1F1418;
+            --dim: #6A555D;
+            --line: #E3CDC7;
+            --oxy: #D6304A;
+            --deoxy: #2E6E8E;
+            --good: #2F7A55;
+            --grid: rgba(214, 48, 74, 0.1);
+            --grid2: rgba(214, 48, 74, .2);
+            --beat: .83s;
+            --disp: "Big Shoulders Display", "Arial Narrow", sans-serif;
+            --body: "Newsreader", Georgia, serif;
+            --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+        }
+
+        /*--dark mode pallete*/
+        @media (prefers-color-scheme:dark) {
+            :root:not([data-theme="light"]) {
+                --paper: #0C0A0E;
+                --card: #171220;
+                --ink: #F2E6E9;
+                --dim: #AC9BA4;
+                --line: #2D2431;
+                --oxy: #FF5A6E;
+                --deoxy: #62B6DC;
+                --good: #5FCF9A;
+                --grid: rgba(255, 90, 110, .06);
+                --grid2: rgba(255, 90, 110, .13);
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --paper: #0C0A0E;
+            --card: #171220;
+            --ink: #F2E6E9;
+            --dim: #AC9BA4;
+            --line: #2D2431;
+            --oxy: #FF5A6E;
+            --deoxy: #62B6DC;
+            --good: #5FCF9A;
+            --grid: rgba(255, 90, 110, .06);
+            --grid2: rgba(255, 90, 110, .13);
+        }
+
+        body {
+            background-color: var(--paper);
+            background-image:
+                repeating-linear-gradient(to right, var(--grid2) 0 1px, transparent 1px 40px),
+                repeating-linear-gradient(to bottom, var(--grid2) 0 1px, transparent 1px 40px),
+                repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 8px),
+                repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 8px);
+            color: var(--ink);
+            font: 17px/1.6 var(--body);
+            padding: 0 20px 60px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: var(--disp);
+            font-weight: 800;
+            line-height: .95;
+            text-transform: uppercase;
+            text-wrap: balance
+        }
+
+        .wrap {
+            max-width: 1000px;
+            margin: 0 auto
+        }
+
+        section {
+            padding: 56px 0;
+            border-top: 1px solid var(--line)
+        }
+
+        h2 {
+            font-size: clamp(30px, 5vw, 50px)
+        }
+
+        .eyebrow {
+            font: 600 11px/1 var(--mono);
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--dim);
+            ;
+            margin-bottom: 10px
+        }
+
+        .lede {
+            color: var(--dim);
+            max-width: 60ch;
+            margin-top: 12px;
+            font-weight: 300;
+            font-size: 18px
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 4px
+        }
+
+        /* hero */
+        header {
+            display: grid;
+            grid-template-columns: 1.1fr.9fr;
+            gap: 40px;
+            align-items: center;
+            padding: 70px 0 56px
+        }
+
+        h1 {
+            font-size: clamp(56px, 11vw, 130px);
+            letter-spacing: -0.0001em;
+        }
+
+        h1 span {
+            color: var(--oxy);
+            display: block
+        }
+
+        .heart {
+            width: min(100%, 300px);
+            margin: 0 auto;
+            display: block;
+            animation: thump var(--beat) infinite
+        }
+
+        @keyframes thump {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            8% {
+                transform: scale(1.08)
+            }
+
+            17% {
+                transform: scale(1)
+            }
+
+            26% {
+                transform: scale(1.04)
+            }
+
+            36% {
+                transform: scale(1)
+            }
+        }
+
+        /*rate switch so the four radios that basically retune the entire page */
+        .sr {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0
+        }
+
+        .rates {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px
+        }
+
+        .rates label {
+            font: 600 11px/1 var(--mono);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: 11px 16px;
+            border: 1px solid var(--line);
+            border-padding: 11px 16px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            cursor: pointer;
+            color: var(--dim)
+        }
+
+        .rates label:hover {
+            border-color: var(--oxy);
+            color: var(--ink)
+        }
+
+        .sr:focus-visible+label {
+            outline: 2px solid var(--oxy);
+            outline-offset: 2px
+        }
+
+        body:has(#r1:checked) {
+            --beat: 1.25s
+        }
+
+        body:has(#r2:checked) {
+            --beat: 0.83s
+        }
+
+        body:has(#r3:checked) {
+            --beat: 0.45s
+        }
+
+        body:has(#r4:checked) {
+            --beat: 0.34s
+        }
+
+        body:has(#r1:checked)[for=r1],
+        body:has(#r2:checked)[for=r2],
+        body:has(#r3:checked)[for=r3],
+        body:has(#r4:checked)[for=r4] {
+            background: var(--oxy);
+            border-color: var(--oxy);
+            color: #fff
+        }
+
+        .bpm {
+            font-family: var(--disp);
+            font-weight: 800;
+            font-size: 56px;
+            color: var(--oxy);
+            line-height: 1
+        }
+
+        .bpm b {
+            display: none
+        }
+
+        .bpm small {
+            font: 500 13px/1 var(--mono);
+            color: var(--dim);
+            margin-left: 6px
+        }
+
+        body:has(#r1:checked) .b1,
+        body:has(#r2:checked) .b2,
+        body:has(#r3:checked) .b3,
+        body:has(#r4:checked) .b4 {
+            display: inline
+        }
+
+        /*ECG cycle*/
+        .strip {
+            overflow: hidden;
+            padding: 0;
+            margin-top: 22px
+        }
+
+        .strip svg {
+            width: 100%;
+            height: 150px;
+            display: block
+        }
+
+        .strip g {
+            animation: roll var(--beat) linear infinite
+        }
+
+        @keyframes roll {
+            to {
+                transform: translateX(-100px)
+            }
+        }
+
+        /*DIAGRAM so 7 clickable parts and its driven by the radio*/
+        .lab {
+            display: grid;
+            grid-template-columns: 1.45fr .85fr;
+            gap: 24px;
+            align-items: start;
+            margin-top: 26px
+        }
+
+        .diagram {
+            width: 100%;
+            height: auto;
+            padding: 12px
+        }
+
+        .parts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 18px
+        }
+
+        .parts label {
+            font: 600 10.5px/1 var(--mono);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: 9px 13px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            cursor: pointer;
+            color: var(--dim)
+        }
+
+        .parts label:hover {
+            border-color: var(--oxy);
+            color: var(--ink)
+        }
+
+        .info {
+            display: none;
+            padding: 22px
+        }
+
+        .info h3 {
+            font-size: 29px;
+            color: var(--oxy)
+        }
+
+        .info p {
+            color: var(--dim);
+            font-size: 16px;
+            margin-top: 9px
+        }
+
+        .info em {
+            display: block;
+            font: 400 13px/1.5 var(--mono);
+            font-style: normal;
+            color: var(--ink);
+            margin-top: 14px;
+            padding-left: 12px;
+            border-left: 3px solid var(--oxy)
+        }
+
+        /*SHOW the chosen card*/
+        body:has(#ra:checked) .i-ra,
+        body:has(#rv:checked) .i-rv,
+        body:has(#la:checked) .i-la,
+        body:has(#lv:checked) .i-lv,
+        body:has(#lu:checked) .i-lu,
+        body:has(#bo:checked) .i-bo,
+        body:has(#va:checked) .i-va {
+            display: block
+        }
+
+        body:has(#ra:checked) [for=ra],
+        body:has(#rv:checked) [for=rv],
+        body:has(#la:checked) [for=la],
+        body:has(#lv:checked) [for=lv],
+        body:has(#lu:checked) [for=lu],
+        body:has(#bo:checked) [for=bo],
+        body:has(#va:checked) [for=va] {
+            background: var(--oxy);
+            border-color: var(--oxy);
+            color: #fff
+        }
+
+        body:has(#ra:checked) .s-ra,
+        body:has(#rv:checked) .s-rv,
+        body:has(#la:checked) .s-la,
+        body:has(#lv:checked) .s-lv,
+        body:has(#lu:checked) .s-lu,
+        body:has(#bo:checked) .s-bo,
+        body:has(#va:checked) .s-va {
+            stroke: var(--ink);
+            stroke-width: 7
+        }
+
+        .diagram text {
+            font-family: var(--disp);
+            font-weight: 700;
+            fill: var(--ink)
+        }
+
+        tube {
+            fill: none;
+            stroke-dasharray: 13 27;
+            animation: flow calc(var(--beat)*2.4) linear infinite
+        }
+
+        @keyframes flow {
+            to {
+                stroke-dashoffset: -40
+            }
+        }
+
+        /*FACTS*/
+        .facts {
+            column: 3 250px;
+            column-gap: 16px;
+            margin-top: 26px
+        }
+
+        .fact {
+            break-inside: avoid;
+            margin-bottom: 16px;
+            padding: 20px
+        }
+
+        .fact h4 {
+            font-family: var(--disp);
+            font-weight: 800;
+            font-size: 25px;
+            text-transform: uppercase;
+            margin-bottom: 7px
+        }
+
+        .fact p {
+            color: var(--dim);
+            font-size: 15.5px
+        }
+
+        /*quiz reveal on answer no scoring that needs js which is pretty UGHH*/
+        .q {
+            padding: 24px;
+            margin-top: 16px
+        }
+
+        .q p.ask {
+            font-family: var(--disp);
+            font-weight: 700;
+            font-size: 25px;
+            text-transform: uppercase;
+            margin-bottom: 14px
+        }
+
+        .q label {
+            display: block;
+            padding: 13px 16px;
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            cursor: pointer;
+            margin-bottom: 7px;
+            font-size: 16px
+        }
+
+        .q label:hover {
+            border-color: var(--oxy);
+        }
+
+        .qo:checked+label {
+            border-color: var(--oxy);
+            background: color-mix(in srgb, var(--oxy)13%, transparent)
+        }
+
+        .q:has(:checked) .ok+label {
+            border-color: var(--good);
+            background: color-mix(in srgb, var(--good)15%, transparent)
+        }
+
+        .q:has(:checked) .ok+label::after {
+            content: " - correct" t;
+            font: 600 11px var(--mono);
+            color: var(--good)
+        }
+
+        .why {
+            display: none;
+            margin-top: 12px;
+            font-size: 15.5px;
+            color: var(--dim)
+        }
+
+        .q:has(:checked) .why {
+            display: block
+        }
+
+        footer {
+            padding-top: 40px;
+            font: 400 13.5px/1.6 var(--mono);
+            color: var(--dim);
+            max-width: 60ch
+        }
+
+        @media (max-width:820px) {
+
+            header,
+            .lab {
+                grid-template-columns: 1fr
+            }
+
+            .heart {
+                width: min(58%, 190px)
+            }
+
+            .facts {
+                columns: 1
+            }
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+            * {
+                animation: none !important
+            }
+        }
+    </style>
+    <div class="wrap">
+        <!--==Hero==-->
+        <header>
+            <div>
+                <p class="eyebrow">A field guide to the HUMAN HEART!!!</p>
+                <h1>Heart<span>Lab</span></h1>
+                <p class="lede">It is the fist-sized organ thats in your body and it is like the size of an orange and
+                    it has not paused for 4 weeks after you were conceived. Choose a tempo below and the entire page
+                    will connect to it and beat along with it. So try it!</p>
+            </div>
+            <svg class="heart" viewBox="0 0 200 230" role="img" aria-label="A beating heart">
+                <g fill="none" stroke-linecap="round">
+                    <path d="M110 60 C110 18 62 12 58 46 L56 66" stroke="var(--oxy)" stroke-width="16" />
+                    <path d="M88 20 L86 2 M74 18 L70 2" stroke="var(--oxy)" stroke-width="8" />
+                    <path d="M82 66 C76 36 120 28 130 52" stroke="var(--deoxy)" stroke-width="14" />
+                    <path d="M150 64 L152 22" stroke="var(--deoxy)" stroke-width="13" />
+                </g>
+                <path
+                    d="M100 66 C130 41 176 57 174 104 C172 144 148 186 114 222 C108 229 98 232 90 224 C53 191 22 146 22 106 C22 61 70 41 100 66 Z"
+                    fill="var(--oxy)" />
+                <g fill="none" stroke="#fff" stroke-linecap="round" opacity=".38">
+                    <path d="M101 72 C96 112 93 152 108 202" stroke-width="4.5" />
+                    <path d="M100 90 C79 102 63 110 48 107" stroke-width="3.5" />
+                    <path d="M103 134 C85 150 68 156 52 153" stroke-width="3" />
+                </g>
+            </svg>
+        </header>
+        <!-- ===== RATE + ECG ==== -->
+        <section>
+            <p class="eyebrow">The tempo</p>
+            <h2>Set the pace</h2>
+            <p class="lede">Your heart actually makes its own electricity which is measured by an electrocardiogram
+                (ECG). This trace is the voltage it generates and it gets faster along with everything else on the page.
+            </p>
+
+            <input class="sr" type="radio" name="rate" id="r1"><input class="sr" type="radio" name="rate" id="r2"
+                checked>
+            <input class="sr" type="radio" name="rate" id="r3"><input class="sr" type="radio" name="rate" id="r4">
+            <div class="rates">
+                <label for="r1">Asleep</label>
+                <label for="r2">Resting</label>
+                <label for="r3">Running</label>
+                <label for="r4">Sprint</label>
+            </div>
+            <p class="bpm" style="margin-top:18px">
+                <b class="b1">48</b><b class="b2">72</b>
+                <b class="b3">133</b><b class="b4">176</b>
+                <small>BPM</small>
+            </p>
+            <div class="card strip">
+                <svg viewBox="0 0 800 120" preserveAspectRatio="none" role="img" aria-label="A scrolling ECG trace">
+                    <defs>
+                        <polyline id="pqrst"
+                            points="0,60 10,60 15,49 20,45 25,49 30,60 40,60 43,66 47,14 51,72 55,60 62,60 68,46 74,44 80,53 85,60 100,60"
+                            fill="none" stroke="var(--oxy)" stroke-width="2.5" stroke-linejoin="round"
+                            stroke-linecap="round" />
+                    </defs>
+                    <g>
+                        <use href="#pqrst" x="0" />
+                        <use href="#pqrst" x="100" />
+                        <use href="#pqrst" x="200" />
+                        <use href="#pqrst" x="300" />
+                        <use href="#pqrst" x="400" />
+                        <use href="#pqrst" x="500" />
+                        <use href="#pqrst" x="600" />
+                        <use href="#pqrst" x="700" />
+                    </g>
+                </svg>
+            </div>
+        </section>
+        <!-- ==== DIAGRAM ==== -->
+        <section>
+            <p class="eyebrow">The loop</p>
+            <h2>Inside the pump</h2>
+            <p class="lede">Two pumps share a wall in the heart and the right side sends blood to the lungs. And the
+                left side basically fires fresh blood to ever fingertip, toe and overall every part that needs blood.
+                Pick a part to read about it.</p>
+
+            <input class="sr" type="radio" name="part" id="ra">
+            <input class="sr" type="radio" name="part" id="rv">
+            <input class="sr" type="radio" name="part" id="la">
+            <input class="sr" type="radio" name="part" id="lv" checked>
+            <input class="sr" type="radio" name="part" id="lu">
+            <input class="sr" type="radio" name="part" id="bo">
+            <input class="sr" type="radio" name="part" id="va">
+            <div class="lab">
+                <div class="card">
+                    <svg class="diagram" viewBox="0 0 900 640" role="img"
+                        aria-label="A diagram of the heart with labels for the right atrium, right ventricle, left atrium, left ventricle, lungs, body and valves">
+                        <path class="tube"
+                            d="M340 560 L140 560 Q110 560 110 530 L110 220 Q110 190 140 190 L270 190 Q300 190 300 220 L300 360 Q300 390 330 390 L420 390 Q450 390 450 360 L450 128"
+                            stroke="var(--deoxy)" stroke-width="22" />
+                        <path class="tube"
+                            d="M552 86 L730 86 Q760 86 760 116 L760 160 Q760 190 730 190 L630 190 Q600 190 600 220 L600 360 Q600 390 630 390 L800 390 Q830 390 830 420 L830 530 Q830 560 800 560 L560 560"
+                            stroke="var(--oxy)" stroke-width="22" />
+                        <ellipse class="s-lu" cx="378" cy="86" rx="56" ry="46" fill="var(--paper)" stroke="var(--deoxy)"
+                            stroke-width="3" />
+                        <ellipse class="s-lu" cx="522" cy="86" rx="56" ry="46" fill="var(--paper)" stroke="var(--oxy)"
+                            stroke-width="3" />
+                        <text x="450" y="26" text-anchor="middle" font-size="30">LUNGS</text>
+                        <text x="378" y="93" text-anchor="middle" font-size="17" fill="var(--deoxy)">CO2 OUT</text>
+                        <text x="522" y="93" text-anchor="middle" font-size="17" fill="var(--oxy)">O2 IN</text>
+                        <rect class="s-ra" x="225" y="135" width="150" height="110" rx="28" fill="var(--paper)"
+                            stroke="var(--deoxy)" stroke-width="4" />
+                        <rect class="s-rv" x="225" y="325" width="150" height="130" rx="28" fill="var(--paper)"
+                            stroke="var(--deoxy)" stroke-width="6" />
+                        <rect class="s-la" x="525" y="135" width="150" height="110" rx="28" fill="var(--paper)"
+                            stroke="var(--oxy)" stroke-width="4" />
+                        <rect class="s-lv" x="515" y="315" width="170" height="150" rx="32" fill="var(--paper)"
+                            stroke="var(--oxy)" stroke-width="15" />
+                        <text x="300" y="196" text-anchor="middle" font-size="19">RIGHT ATRIUM</text>
+                        <text x="300" y="398" text-anchor="middle" font-size="18">RIGHT VENTRICLE</text>
+                        <text x="600" y="196" text-anchor="middle" font-size="19">LEFT ATRIUM</text>
+                        <text x="600" y="398" text-anchor="middle" font-size="19">LEFT VENTRICLE</text>
+                        <g class="s-va" fill="var(--card)" stroke="var(--ink)" stroke-width="3">
+                            <circle cx="300" cy="285" r="17" />
+                            <circle cx="450" cy="330" r="15" />
+                            <circle cx="600" cy="285" r="17" />
+                            <circle cx="720" cy="390" r="15" />
+                        </g>
+                        <rect class="s-bo" x="340" y="524" width="220" height="72" rx="14" fill="var(--paper)"
+                            stroke="var(--dim)" stroke-width="3" />
+                        <text x="450" y="568" text-anchor="middle" font-size="24">THE BODY</text>
+                    </svg>
+                    <div class="parts">
+                        <label for="bo">Body</label><label for="ra">Right atrium</label><label for="rv">Right
+                            ventricle</label>
+                        <label for="lu">Lungs</label><label for="la">Left atrium</label><label for="lv">Left
+                            ventricle</label>
+                        <label for="va">Valves</label>
+                    </div>
+                </div>
+            </div>
+            <div class="card info i-bo">
+                <h3>The body</h3>
+                <p>Every single cell in the body needs oxygen and it has to get delivered and waste also needs to get
+                    hauled away. Capillaries here are so narrow that the red cells fold right up to pass on a single
+                    file. Then the blood turns around and starts the whole loop again.</p><em>Your brain is 2 percent of
+                    your weight and it takes 15 percent of the flow</em>
+            </div>
+            <div class="card info i-ra">
+                <h3>Right atrium</h3>
+                <p>The arrivals hall. Blood coming home from your body and it is basically tired, dark, and full of
+                    carbon dioxide and it pours through two veins. A thin-walled holding room, not an actual serious
+                    pump</p><em>Wall thickness: about 2mm. It barely has to push</em>
+            </div>
+            <div class="card info i-rv">
+                <h3>Right ventricle</h3>
+                <p>This is basically the short-haul pump. It only moves blood a few centimetres into the lungs next door
+                    so its super light. And if it gets pushed any harder it will burst and delicate capillaries around
+                    your air sacs which is very terrible.</p><em>Peak pressure: ~25 mmHg - a fifth of the left
+                    side.</em>
+            </div>
+            <div class="card info i-lu">
+                <h3>The lungs</h3>
+                <p>Where blood changes colour it spreads into capillaries wrapping around a whopping 300 million air
+                    sacs and it is seperated from the air by less than a thousandth of a millimetre. The blood which is
+                    dark maroon turns into a bright scarley sort of colour in under a second which is wild.</p><em>It's
+                    unfolded and your lungs would cover half a tennis court which is CRAZY if you would think about
+                    it.</em></p>
+            </div>
+            <div class="card info i-la">
+                <h3>Left atrium</h3>
+                <p>This is the return desk of the heart. Freshly oxygenated blood comes from the lungs through four
+                    pulmonary veins and the only veins in your body carrying rich oxygen blood and it collect here
+                    before dropping down.</p><em>This is where atrial fibrillation usually begins. And it's basically
+                    chaotic electrical signals in the atria.</em>
+            </div>
+            <div class="card info i-iv">
+                <h3>Left ventricle</h3>
+                <p>The engine room. And that is the exact reason that the diagram shows one wall that is a bit thicker
+                    than the rest of them. It has to launch blood into your brain, your toes, and overall every where
+                    against resistance of your entire body. It twists as it contracts and it wrings itself out like a
+                    towel.</p><em>The peak pressure is ~120 mmHg and the top number in your blood pressure.</em>
+            </div>
+            <div class="card info i-va">
+                <h3>The four valves</h3>
+                <p>These are one way doors that are tethered by small tiny cords so that they cannot blow inside-out.
+                    They open up to let a chamber fill and slam shut the instant it squeezes. This is also the reason
+                    why a heart makes any sound at all.</p><em>So lub = tricuspid and mitral closing. And the dub =
+                    pulmonary and aortic.</em>
+            </div>
+    </div>
+    </checked>
+
+    <!-- =====Facts=====-->
+    <section>
+        <p class="eyebrow">Worth Knowing</p>
+        <h2>Field notes</h2>
+        <div class="facts">
+            <div class="card fact">
+                <h4>Blood is never blue lol</h4>
+                <p>Deoxygenated blood is actually a dark red color called maroon, not blue. Your veins look blue or
+                    green because oh how skin scatters light and the diagrams colour it blue or green including the one
+                    above so you can follow the loop.</p>
+            </div>
+            <div class="card fact">
+                <h4>Veins are not actually defined by oxygen</h4>
+                <p>Arteries carry blood away from the heart and the veins carry it back and that the whole process. The
+                    pulmonary vessels break the usualy pattern and confuse everybody which is a nice systematic flow.
+                </p>
+            </div>
+            <div class="card fact">
+                <h4>It feeds itself last</h4>
+                <p>The heart sits in a bath of blood and cannot use a drop, which is pretty scary if you think about it.
+                    It has its very own delivery system all over the outside. Block one of those and that patch of
+                    muscle dies...thats a heart attack and it happens A LOT around the world. For example in the USA a
+                    heart attack occurs every 40 seconds.</p>
+            </div>
+            <div class="card fact">
+                <h4>100,000 a day</h4>
+                <p>Roughly 35 million beats occur per annum and about 2.5 billion in an average lifetime, moving around
+                    7,500 litres every single day with no maintenance window which is absolutely crazy.</p>
+            </div>
+            <div class="card fact">
+                <h4>It started before your face did</h4>
+                <p>A lot of people do not know this but around week four of gestation, before limbs, before eyelids, a
+                    tube of cells folds over and twitches. And that twitch has not stopped ever since.</p>
+            </div>
+            <div class="card fact">
+                <h4>The scale of it is wild</h4>
+                <p>A blue whale's heart weighs as much as a small car and beats twice a minute when diving. While a
+                    hummingbird's hits 1,200. So the smaller the animal is, the faster heart and also the shorter life.
+                </p>
+            </div>
+        </div>
+        </div>
+    </section>
+    <!-- =====QUIZ===== -->
+    <section>
+        <p class="eyebrow">Check yourself</p>
+        <h2>Four (4) QUESTIONS</h2>
+        <div class="card q">
+            <p class="ask">Which chamber pumps blood to your entire body? Think carefully.</p>
+            <input class="sr qo" type="radio" name="q1" id="q1a"><label for="q1a">Right atrium</label>
+            <input class="sr qo" type="radio" name="q1" id="q1b"><label for="q1b">Right ventricle</label>
+            <input class="sr qo ok" type="radio" name="q1" id="q1c"><label for="q1c">Left ventricle</label>
+            <p class="why">The left ventricle has the thickest wall out of all. Because it pressurizes your whole body
+                at every single beat.</p>
+        </div>
+        <div class="card q">
+            <p class="ask">What actually makes the lub-dub sound?</p>
+            <input class="sr qo" type="radio" name="q2" id="q2a"><label for="q2a">Muscle contracting</label>
+            <input class="sr qo ok" type="radio" name="q2" id="q2b"><label for="q2b">Valves snapping shut</label>
+            <input class="sr qo" type="radio" name="q2" id="q2c"><label for="q2c">Blood hitting the aorta</label>
+            <p class="why">Lub is the tricuspid and mitral closing and the dub is the pulmonary and aortic. A murmur is
+                a valve that does not seal cleanly. For more scroll to the facts page.</p>
+        </div>
+        <div class="card q">
+            <p class="ask">What do the pulmonary veins carry?</p>
+            <input class="sr qo" type="radio" name="q3" id="q3a"><label for="q3a">Oxygen-poor blood, like all the
+                veins</label>
+            <input class="sr qo ok" type="radio" name="q3" id="q3b"><label for="q3b">Oxygen-rich blood</label>
+            <input class="sr qo" type="radio" name="q3" id="q3c"><label for="q3c">Lymph fluid</label>
+            <p class="why">They are the exception. "Vein" means basically heading toward the heart and it says nothing
+                at all about oxygen content.</p>
+        </div>
+        <div class="card q">
+            <p class="ask">Where does each hearbeat actually begin???</p>
+            <input class="sr qo" type="radio" name="q4" id="q4a"><label for="q4a">The brain stem</label>
+            <input class="sr qo ok" type="radio" name="q4" id="q4b"><label for="q4b">A patch of cells in the right
+                atrium</label>
+            <input class="sr qo" type="radio" name="q4" id="q4c"><label for="q4c">The left ventricle</label>
+            <p class="why">The sinoatrial node fires on its own time and it is why a heart keeps beating with every
+                nerve to it cut and actually also the reason why transplants work.</p>
+        </div>
+    </section>
+    <footer>
+        Heart Lab is an educational website ONLY. The numbers that are shown in this are typical aduly averages and
+        every body differs in its own unique way. This page cannot diagnose anything at all. Chest pain, breathlessness,
+        tachycardia, palpitations, fainting, or any other symptom should be taken seriously and you should seek medical
+        attention immediately. If you are in the USA and you are having a heart attack call 911. If you are outside of
+        the USA please call your local emergency number. So yes if somethings wrong call a doctor, not a website.
+    </footer>
+    </div>
+
+</html>
